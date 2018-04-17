@@ -1,1 +1,55 @@
+<head>
+  <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+  <link rel="stylesheet" href="/stylesheets/feed.css">
+</head>
 
+<header>
+
+  <div class="break">
+    <div class="button-area"><a href="/" class="back">< Back</a></div>
+    </div>
+
+  <div class="logout-button">
+    <a href="#" id="logout">Logout</a>
+  </div>
+
+  <div class="top">
+
+    <div class="logo">
+      <img src="images/LogoSVG.svg">
+    </div>
+  </div>
+
+  <p id="title"><a id="petal"><font color=#FFC857>P</font><font color=#E9724C>E</font><font color=#C5283D>T</font><font color=#00A8E8>A</font><font color=#7BC950>L</font></a>PALET</p>
+
+  <p id="kicker">Curated colour palette inspiration.</p>
+</header>
+
+<div class="well col-xs-6 col-xs-offset-3">
+<div class="row col-xs-10 col-xs-offset-1">
+<form class="form-horizontal" role="form" id="postForm">
+<div class="row">
+<div class="form-group">
+<div class="col-xs-12">
+<textarea class="form-control required" style="min-width: 100%" rows="3"
+id="inputPost" placeholder="Got something to say?" maxlength="140"></textarea>
+<label id="charRemaining" for="inputPost">140</label>
+</div>
+</div>
+</div>
+<div class="form-group">
+<div class="col-xs-3">
+</div>
+<div class="col-xs-3">
+</div>
+<div class="col-xs-3">
+</div>
+<div class="col-xs-3">
+<button type="text" class="btn btn-primary">Post</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+<div class="row col-xs-6 col-xs-offset-3" id="feedPosts">
+</div>
