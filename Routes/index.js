@@ -1,63 +1,109 @@
 var express = require('express');
 var router = express.Router();
+var Comment = require('../models/comments');
 var User = require('../models/users');
 var jwt = require('jsonwebtoken');
 
 
-/* GET users listing. */
+/* GET home page. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.render('index', { title: 'Petal Palet - Curated Colour Palette Inspiration' });
 });
 
-router.get('/register', function(req, res, next) {
-    res.render('register');
+router.get('/contact', function(req, res, next) {
+  res.render('contact', { title: 'Petal Palet - Curated Colour Palette Inspiration' });
 });
 
-router.get('/login', function(req, res, next) {
-    res.render('login');
+router.get('/about', function(req, res, next) {
+  res.render('about', { title: 'Petal Palet - Curated Colour Palette Inspiration' });
 });
 
-router.post('/register', function(req, res, next){
-    var username = req.body.user_name;
-    var password = req.body.password;
-    // Check if account already exists
-    User.findOne({ 'user_name' :  username }, function(err, user)
-    {
+router.get('/loginError', function(req, res, next) {
+  res.render('loginError', { title: 'Petal Palet - Curated Colour Palette Inspiration' });
+});
+
+
+/* GET feed page. */
+router.get('/feed', function(req, res, next) {
+
+    try {
+        var jwtString = req.cookies.Authorization.split(" ");
+        var profile = verifyJwt(jwtString[1]);
+        if (profile) {
+            res.render('feed');
+        }
+    }catch (err) {
+            res.render('loginError');
+        }
+});
+
+
+
+/**
+ * Adds comments to our database
+ */
+router.post('/addComment', function(req, res, next) {
+    // Extract the request body which contains the comments
+    comment = new Comment(req.body);
+    comment.save(function (err, savedComment) {
+        if (err)
+            throw err;
+
+        res.json({
+            "id": savedComment._id
+        });
+    });
+});
+
+/**
+ * Returns all comments from our database
+ */
+router.get('/getComments', function(req, res, next) {
+
+    Comment.find({}, function (err, comments) {
         if (err)
             res.send(err);
-        // check to see if theres already a user with that email
-        if (user) {
-            res.status(401).json({
-                "status": "info",
-                "body": "Username already taken"
-            });
-        } else {
-            // If there is no user with that username create the user
-            var newUser = new User();
+        res.json(comments);
+    });
+});
 
-            // set the user's local credentials
-            newUser.user_name = username;
-            newUser.password = newUser.generateHash(password);
-            newUser.access_token = createJwt({user_name:username});
-            newUser.save(function(err, user) {
-                if (err)
-                    throw err;
-	     res.cookie('Authorization', 'Bearer ' + user.access_token); 
-                res.json({'success' : 'account created'});
+/**
+  Updates a comment already in the database
+ */
+router.put('/updateComment/:id', function(req, res, next){
 
-            });
-        }
+    var id = req.params.id;
+    Comment.update({_id:id}, req.body, function (err) {
+        if (err)
+            res.send(err);
+
+        res.json({status : "Successfully updated the document"});
+    });
+});
+
+/**
+ * Deletes a comment from the database
+ */
+router.delete('/removeComment/:id', function(req, res, next){
+
+    var id = req.params.id;
+    Comment.remove({_id:id}, function (err) {
+        if (err)
+            res.send(err);
+
+        res.json({status : "Successfully removed the document"});
     });
 });
 
 /*
- Creates a JWT
+ Verifies a JWT
  */
-function createJwt(profile) {
-    return jwt.sign(profile, 'CSIsTheWorst', {
-        expiresIn: '10d'
-    });
+function verifyJwt(jwtString) {
+
+    var value = jwt.verify(jwtString, 'CSIsTheWorst');
+    return value;
 }
+
 
 
 module.exports = router;
